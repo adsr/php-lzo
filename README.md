@@ -14,11 +14,18 @@ To install:
 
 To use:
 
-    $big_data = 'holy mackerel';
+    $big_data = 'holy mackerel mackerel mackerel';
     $small_data = lzo_compress($big_data);
 
 or:
 
     $orig_data = lzo_decompress($previously_compressed_data);
 
-See http://www.oberhumer.com/opensource/lzo/ to learn more about lzo compression.
+The default compression algorithm is LZO1X-1, but you can also specify one:
+
+    $data = lzo_compress($data, LZO1X_999);
+    $data = lzo_decompress($data, LZO1X_999);
+
+See available compression algorithms in `db.h`.
+
+Visit http://www.oberhumer.com/opensource/lzo/ to learn more about lzo compression.
