@@ -11,3 +11,14 @@ To install:
     $ phpize && ./configure && make
     $ php -denable_dl=on -dextension=`pwd`/modules/lzo.so lzo.php
     $ sudo make install
+
+To use:
+
+    $big_data = 'holy mackerel';
+    $small_data = lzo_compress($big_data);
+
+or:
+
+    $orig_data = lzo_decompress($previously_compressed_data);
+
+See http://www.oberhumer.com/opensource/lzo/ to learn more about lzo compression.
