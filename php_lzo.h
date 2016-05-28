@@ -25,11 +25,11 @@ extern zend_module_entry lzo_module_entry;
 #define phpext_lzo_ptr &lzo_module_entry
 
 #ifdef PHP_WIN32
-#	define PHP_LZO_API __declspec(dllexport)
+    #define PHP_LZO_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_LZO_API __attribute__ ((visibility("default")))
+    #define PHP_LZO_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_LZO_API
+    #define PHP_LZO_API
 #endif
 
 #ifdef ZTS
@@ -71,7 +71,7 @@ compress_t;
 PHP_FUNCTION(lzo_compress);
 PHP_FUNCTION(lzo_decompress);
 
-#endif	/* PHP_LZO_H */
+#endif    /* PHP_LZO_H */
 
 /*
  * Local variables:

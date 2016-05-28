@@ -1,7 +1,7 @@
 <?php
 
 if (!extension_loaded('lzo')) {
-	dl('lzo.' . PHP_SHLIB_SUFFIX);
+    dl('lzo.' . PHP_SHLIB_SUFFIX);
 }
 
 if (!function_exists('lzo_compress')) {
@@ -14,7 +14,7 @@ for ($i = 0; $i < 100; $i++) {
     $data .= uniqid('', true);
 }
 
-$format = "\t%10s    %5s    %10s\n";
+$format = "    %16s %8s %10s\n";
 printf($format, "Algorithm", "Pass?", "Compression ratio");
 foreach (get_defined_constants() as $name => $alg) {
     if (!preg_match('/^LZO/', $name)) {

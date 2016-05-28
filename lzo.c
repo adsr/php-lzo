@@ -39,6 +39,17 @@
 #include <lzo/lzo1b.h>
 #include <lzo/lzo_asm.h>
 
+#if PHP_MAJOR_VERSION >= 7
+    #define COMPAT_RETVAL_STRINGL(str, len, dup) \
+        RETVAL_STRINGL(str, len)
+    #define compat_str_len_t size_t
+#else
+    #define COMPAT_RETVAL_STRINGL(str, len, dup) \
+        RETVAL_STRINGL(str, len, dup)
+    #define compat_str_len_t int
+#endif
+
+
 /**
  * Database of compression algorithms and associated metadata
  * The header file (db.h) is taken from lzotest and slightly modified
@@ -56,7 +67,7 @@ static const int compress_database_len = sizeof(compress_database) / sizeof(comp
 const zend_function_entry lzo_functions[] = {
     PHP_FE(lzo_compress, NULL)
     PHP_FE(lzo_decompress, NULL)
-	PHP_FE_END	/* Must be the last line in lzo_functions[] */
+    PHP_FE_END    /* Must be the last line in lzo_functions[] */
 };
 /* }}} */
 
@@ -64,19 +75,19 @@ const zend_function_entry lzo_functions[] = {
  */
 zend_module_entry lzo_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
-	STANDARD_MODULE_HEADER,
+    STANDARD_MODULE_HEADER,
 #endif
-	"lzo",
-	lzo_functions,
-	PHP_MINIT(lzo),
-	PHP_MSHUTDOWN(lzo),
+    "lzo",
+    lzo_functions,
+    PHP_MINIT(lzo),
+    PHP_MSHUTDOWN(lzo),
     NULL,
     NULL,
-	PHP_MINFO(lzo),
+    PHP_MINFO(lzo),
 #if ZEND_MODULE_API_NO >= 20010901
-	PHP_LZO_VERSION,
+    PHP_LZO_VERSION,
 #endif
-	STANDARD_MODULE_PROPERTIES
+    STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
@@ -107,7 +118,7 @@ PHP_MINIT_FUNCTION(lzo)
         );
     }
 
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -115,7 +126,7 @@ PHP_MINIT_FUNCTION(lzo)
  */
 PHP_MSHUTDOWN_FUNCTION(lzo)
 {
-	return SUCCESS;
+    return SUCCESS;
 }
 /* }}} */
 
@@ -123,20 +134,20 @@ PHP_MSHUTDOWN_FUNCTION(lzo)
  */
 PHP_MINFO_FUNCTION(lzo)
 {
-	php_info_print_table_start();
-	php_info_print_table_header(2, "lzo support", "enabled");
+    php_info_print_table_start();
+    php_info_print_table_header(2, "lzo support", "enabled");
     php_info_print_table_header(2, "extension version", PHP_LZO_VERSION);
     php_info_print_table_header(2, "liblzo version", lzo_version_string());
-	php_info_print_table_end();
+    php_info_print_table_end();
 }
 /* }}} */
 
 /* {{{ Compress/decompress logic
  */
 static void php_lzo_do(INTERNAL_FUNCTION_PARAMETERS, int is_compress) {
-	int len;
-	char *data = NULL;
-    int data_len = 0;
+    int len;
+    char *data = NULL;
+    compat_str_len_t data_len = 0;
     long algorithm = -1;
     const compress_t *compression;
     lzo_bytep in;
@@ -146,9 +157,9 @@ static void php_lzo_do(INTERNAL_FUNCTION_PARAMETERS, int is_compress) {
     int rc;
 
     /** Parse params */
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &data, &data_len, &algorithm) == FAILURE) {
-		return;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &data, &data_len, &algorithm) == FAILURE) {
+        return;
+    }
 
     /** Determine algorithm. Default to LZO1X-1 */
     if (algorithm == -1) {
@@ -194,7 +205,10 @@ static void php_lzo_do(INTERNAL_FUNCTION_PARAMETERS, int is_compress) {
     if (workmem) efree(workmem);
 
     /** Return (de)compress data */
-    RETURN_STRINGL(out, out_len, 0);
+    COMPAT_RETVAL_STRINGL(out, out_len, 1);
+
+    /** Free out */
+    efree(out);
 }
 /* }}} */
 
