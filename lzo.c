@@ -42,10 +42,12 @@
 #if PHP_MAJOR_VERSION >= 7
     #define COMPAT_RETVAL_STRINGL(str, len, dup) \
         RETVAL_STRINGL(str, len)
+    #define COMPAT_STRLEN_DELTA 0
     #define compat_str_len_t size_t
 #else
     #define COMPAT_RETVAL_STRINGL(str, len, dup) \
         RETVAL_STRINGL(str, len, dup)
+    #define COMPAT_STRLEN_DELTA 1
     #define compat_str_len_t int
 #endif
 
@@ -110,7 +112,7 @@ PHP_MINIT_FUNCTION(lzo)
     for (i = 0; compress_database[i].compress != NULL; i++) {
         zend_register_long_constant(
             compress_database[i].name,
-            strlen(compress_database[i].name) + 1,
+            strlen(compress_database[i].name) + COMPAT_STRLEN_DELTA,
             i,
             CONST_CS | CONST_PERSISTENT,
             module_number
